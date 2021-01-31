@@ -4,7 +4,8 @@
 #include "SDL.h"
 #include "Screen.h"
 #include "Rectangle.h"
-
+#include "Swarm.h"
+#include "SdlGui.h"
 #undef main
 
 using namespace std;
@@ -12,48 +13,72 @@ using namespace std;
 int main()
 {
   srand((unsigned int)time(NULL)); // Set random seed
-  // * Constants
+
   const char *TITLE = "Particle Fun";
   Screen screen(TITLE);
 
-  dgs::Utilities utils;
-
   Rectangle bg(0, 0, screen.WIDTH, screen.HEIGHT, 0.09);
+  sdlGui::CreateBlock gui(20, 20, 150, 300, 50, 50, 50, 200);
 
-  const int nRects = 20;
-  Rectangle *rects = new Rectangle[nRects];
-  for (int i = 0; i < nRects; i++) // TODO: Create swarm
-  {
-    int squareSize = utils.randomNum(30, 60);
-    int speedX = utils.randPosNeg(utils.randomNum(1, 2));
-    int speedY = utils.randPosNeg(utils.randomNum(1, 2));
+  Swarm swarm(100, true, 0.5);
+  swarm.createSwarm(screen);
 
-    rects[i] = Rectangle(utils.randomNum(squareSize, screen.WIDTH - squareSize * 5),  // x
-                         utils.randomNum(squareSize, screen.HEIGHT - squareSize * 5), // y
-                         squareSize,                                                  // Width
-                         squareSize,                                                  // Height
-                         speedX,                                                      // Horizontal speed
-                         speedY,                                                      // Vertical speed
-                         1                                                            // ColorSpeed
-    );
-  }
-
+  bool isMouseDown = false;
   // * Animation Loop
   bool quit = false;
   while (!quit)
   {
     bg.updateBg(screen);
     screen.clear();
-    for (int i = 0; i < nRects; i++) // TODO: Create swarm
-    {
-      rects[i].update(screen);
-    }
+    swarm.update(screen);
+    gui.drawBlock(screen);
     screen.update();
-    quit = screen.checkPoll();
+
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+      if (event.type == SDL_QUIT)
+      {
+        quit = true;
+      }
+
+      if (event.type == SDL_MOUSEBUTTONDOWN)
+      {
+        isMouseDown = true;
+        swarm.hiveMind = true;
+        int mX = event.button.x;
+        int mY = event.button.y;
+        swarm.mX = mX;
+        swarm.mY = mY;
+
+        if (gui.checkRegion(mX, mY))
+        {
+          cout << "Clicked on gui" << endl;
+        }
+        else
+        {
+          // swarm.add(screen, mX, mY);
+        }
+      }
+
+      if (event.type == SDL_MOUSEBUTTONUP)
+      {
+        isMouseDown = false;
+        swarm.hiveMind = false;
+      }
+
+      if (event.type == SDL_MOUSEMOTION && isMouseDown)
+      {
+        int mX = event.button.x;
+        int mY = event.button.y;
+        swarm.mX = mX;
+        swarm.mY = mY;
+      }
+    }
   }
 
   // * Exit program
-  delete[] rects;
+  swarm.close();
   screen.close();
   return 0;
 }

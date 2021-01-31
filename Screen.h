@@ -10,10 +10,10 @@ struct Screen
   Screen(const char *iTitle);
   bool checkPoll();
   void close();
-  // void setPixel(int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 0xFF, bool texture2 = false);
   void update();
   void clear();
   void drawRect(SDL_Rect rect, int r, int g, int b, int a);
+  void drawGui(SDL_Rect rect, int r, int g, int b, int a);
   void drawBg(int r, int g, int b, int a);
 
 private:

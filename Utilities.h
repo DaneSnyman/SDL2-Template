@@ -28,6 +28,53 @@ namespace dgs
     }
   };
 
+  //
+  // ! Color Wheel.....
+  //
+  struct ColorWheel
+  {
+    ColorWheel();
+    ColorWheel(double iColorSpeed);
+    double green;
+    double red;
+    double blue;
+    double alpha;
+
+    void setColor();
+
+  private:
+    double colorSpeed;
+    double colorIG;
+    double colorIR;
+    double colorIB;
+    double colorIA;
+    Utilities utils;
+  };
+
+  ColorWheel::ColorWheel() {}
+  ColorWheel::ColorWheel(double iColorSpeed) : colorSpeed(iColorSpeed)
+  {
+    red = utils.randomNum(iColorSpeed, 255 - iColorSpeed);
+    green = utils.randomNum(iColorSpeed, 255 - iColorSpeed);
+    blue = utils.randomNum(iColorSpeed, 255 - iColorSpeed);
+    alpha = utils.randomNum(iColorSpeed, 255 - iColorSpeed);
+    colorIR = iColorSpeed;
+    colorIG = iColorSpeed;
+    colorIB = iColorSpeed;
+    colorIA = iColorSpeed;
+  }
+
+  void ColorWheel::setColor()
+  {
+    colorIG = utils.checkColorI(colorIG, green);
+    colorIR = utils.checkColorI(colorIR, red);
+    colorIB = utils.checkColorI(colorIB, blue);
+    colorIA = utils.checkColorI(colorIA, alpha);
+    green += (double)colorIG;
+    red += (double)colorIR;
+    blue += (double)colorIB;
+    alpha += (double)colorIA;
+  }
 } // namespace dgs
 
 #endif //!__UTILITIES__H__

@@ -51,6 +51,11 @@ bool Screen::checkPoll()
     {
       return true;
     }
+
+    if (event.type == SDL_MOUSEBUTTONDOWN)
+    {
+      std::cout << "clicked window" << std::endl;
+    }
     return false;
   }
   return false;
@@ -61,6 +66,13 @@ void Screen::drawRect(SDL_Rect rect, int r, int g, int b, int a)
   SDL_SetRenderDrawColor(this->renderer, r, g, b, a);
   SDL_RenderFillRect(this->renderer, &rect); // ! Fill
   // SDL_RenderDrawRect(this->renderer, &rect); // ! Outline
+}
+
+void Screen::drawGui(SDL_Rect rect, int r, int g, int b, int a)
+{
+  SDL_SetRenderDrawColor(this->renderer, r, g, b, a);
+  SDL_RenderFillRect(this->renderer, &rect); // ! Fill
+  SDL_RenderDrawRect(this->renderer, &rect); // ! Outline
 }
 
 void Screen::drawBg(int r, int g, int b, int a)
