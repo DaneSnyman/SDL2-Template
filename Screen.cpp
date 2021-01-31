@@ -1,13 +1,11 @@
 #include "Screen.h"
 
-Screen::Screen(const char *iTitle, int iBlockSize) : title(iTitle), blockSize(iBlockSize)
+Screen::Screen(const char *iTitle) : title(iTitle)
 {
   this->checkInit();
   this->createWindow();
   this->createRenderer();
-  this->createTexture();
-  SDL_SetTextureBlendMode(this->texture, SDL_BLENDMODE_BLEND);
-  this->buffer = new Uint32[this->WIDTH * this->HEIGHT];
+  SDL_SetRenderDrawBlendMode(this->renderer, SDL_BLENDMODE_BLEND);
 }
 
 bool Screen::checkInit()
@@ -43,18 +41,6 @@ void Screen::createRenderer()
   }
 }
 
-void Screen::createTexture()
-{
-  this->texture = SDL_CreateTexture(this->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, this->WIDTH, this->HEIGHT);
-
-  if (this->texture == NULL)
-  {
-    std::cout << "Error creating renderer: " << SDL_GetError() << std::endl;
-    SDL_DestroyWindow(this->window);
-    SDL_Quit();
-  }
-}
-
 bool Screen::checkPoll()
 {
   SDL_Event event;
@@ -70,42 +56,30 @@ bool Screen::checkPoll()
   return false;
 }
 
-void Screen::update()
+void Screen::drawRect(SDL_Rect rect, int r, int g, int b, int a)
 {
-  SDL_UpdateTexture(this->texture, NULL, this->buffer, this->WIDTH * sizeof(Uint32));
-  SDL_RenderClear(this->renderer);
-  SDL_RenderCopy(this->renderer, this->texture, NULL, NULL);
-  SDL_RenderPresent(this->renderer);
+  SDL_SetRenderDrawColor(this->renderer, r, g, b, a);
+  SDL_RenderFillRect(this->renderer, &rect); // ! Fill
+  // SDL_RenderDrawRect(this->renderer, &rect); // ! Outline
 }
 
-void Screen::setPixel(int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool texture2)
+void Screen::drawBg(int r, int g, int b, int a)
 {
-  if (x > 0 || x < this->WIDTH || y > 0 || y < this->HEIGHT)
-  {
-    Uint32 color = 0;
-    color += r;
-    color <<= 8;
-    color += g;
-    color <<= 8;
-    color += b;
-    color <<= 8;
-    color += a;
+  SDL_SetRenderDrawColor(this->renderer, r, g, b, a);
+}
 
-    if (texture2)
-    {
-      // this->buffer2[y * this->WIDTH + x] = color;
-    }
-    else
-    {
-      this->buffer[y * this->WIDTH + x] = color;
-    }
-  }
+void Screen::clear()
+{
+  SDL_RenderClear(this->renderer);
+}
+
+void Screen::update()
+{
+  SDL_RenderPresent(this->renderer);
 }
 
 void Screen::close()
 {
-  delete[] this->buffer;
-  SDL_DestroyTexture(this->texture);
   SDL_DestroyRenderer(this->renderer);
   SDL_DestroyWindow(this->window);
   SDL_Quit();

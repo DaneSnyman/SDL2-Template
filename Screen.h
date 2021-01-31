@@ -7,23 +7,22 @@ struct Screen
 {
   static const int WIDTH = 1024;
   static const int HEIGHT = 768;
-  const int blockSize;
-  Screen(const char *iTitle, int iBlockSize);
+  Screen(const char *iTitle);
   bool checkPoll();
   void close();
-  void setPixel(int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 0xFF, bool texture2 = false);
+  // void setPixel(int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 0xFF, bool texture2 = false);
   void update();
+  void clear();
+  void drawRect(SDL_Rect rect, int r, int g, int b, int a);
+  void drawBg(int r, int g, int b, int a);
 
 private:
   const char *title;
   SDL_Window *window;
   SDL_Renderer *renderer;
-  SDL_Texture *texture;
-  Uint32 *buffer;
   bool checkInit();
   void createWindow();
   void createRenderer();
-  void createTexture();
 };
 
 #endif //!__SCREEN__H__
